@@ -1,0 +1,19 @@
+marked 18.1.3, vendored unchanged for competitions/markdown-render-speed-01 as the reference renderer:
+the expected HTML of every case is what this file's marked.parse(markdown) returns with marked's
+default options (GFM on, async off).
+
+  package     marked@18.1.3 on npm, the latest release when vendored (published 2026-11-02T18:00:32.810Z)
+  tarball     https://registry.npmjs.org/marked/-/marked-18.1.3.tgz
+              sha1 2b1f2aff274503e3ec053c412c6eb979bd7c8194
+              integrity sha512-9ChMH8EVVgjgID49nsL6IWxWk5c6GtAsq/xw7U1ggkjkU5AGuv68oLTVlFRtvcUYZtpbNyjyvGo3YDu0fGapiw==
+  source      https://github.com/markedjs/marked, tag v18.1.3, commit ba50aa95636ac8f97f46446bbfeb04592ed22216
+              (the package's gitHead)
+  licence     MIT (Copyright (c) 2018+, MarkedJS; Copyright (c) 2011-2018, Christopher Jeffrey); LICENSE also
+              carries the original Markdown's BSD-style notice (Copyright 2004, John Gruber)
+
+  marked.esm.js   the package's lib/marked.esm.js, byte for byte
+                  sha256 e76f3b37046a5d294159872002e5f6fcda8ed232e1be45ff76b3863f2919dae3
+  LICENSE         the package's LICENSE, byte for byte
+                  sha256 8e3a3f82f59a60958f56ca08f445647c32a4733dc7ca6c2c46f6eb898471ab9c
+
+Nothing here is edited. The house baseline carries the same two files (baseline/vendor/marked/).
