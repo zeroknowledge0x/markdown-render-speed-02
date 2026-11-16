@@ -13,6 +13,51 @@ pedantic off, async off), and `main.ts`, the driver the harness runs.
                               faster paths in parse.js are checked against and fall back to
     LICENSE                   MIT
 
+## What parse.js does that marked does not
+
+marked's inline loop runs ten tokenizer rules at every token boundary and at most one of them can
+match; its block loop runs twelve at every block boundary. Each is a regex call whose first character
+already decides it. So `parse.js` subclasses marked's tokenizer and renderer and puts a
+one-character guard in front of every rule that must begin with a known character - a backslash for
+`escape`, a `<` for `tag` and `autolink`, a backtick for `codespan`, `[` or `!` for `link` and
+`reflink`, the url rule's own first letters, the second line's first character for a gfm table's
+delimiter row, and so on:
+
+    escape     src[0] === '\'      tag, autolink, html   src[0] === '<'
+    codespan   src[0] === '`'      link, reflink, def    src[0] === '[' or '!'
+    br         src[0] === ' '|\    url                   src[0] in [A-Za-z0-9._+-]
+    table      the line after the first ends in '-', ':' or '|'
+
+A guard only ever answers "this rule cannot match"; when it cannot say that, the vendored rule runs
+and decides, so every answer is still marked's. `text` (the block rule `/^[^\n]+/`) becomes a look-up
+for the next line end, and the renderer escapes a text token only when it holds a character that can
+be escaped.
+
+`emStrong` and `del` are deliberately left alone: the lexer builds its emphasis mask whenever the
+tokenizer's own `emStrong` or `del` is not the prototype's, and that mask costs more than a guard
+would save.
+
+## Measured in this repository
+
+- Practice set, all 720 cases byte for byte identical to marked (`node cli/makefun.mjs grade-local`,
+  and a differential fuzz of 36,000 synthetic and mutated documents outside the repository).
+- CPU over the practice set in one process (this container, `RUSAGE_CHILDREN` around the driver):
+  marked 3.65s median, this entry 3.59s median over four interleaved runs - a small gain, inside the
+  box's own noise. The guards remove three native regex calls per inline token; that is worth a few
+  per cent, not a multiple.
+
+## Measured and NOT kept
+
+A hand-written scanner for the inline text rule, replacing
+
+    /^(?:[^a-zA-Z0-9](?=(?:mailto|xmpp):)|(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|[hH][tT][tT][pP][sS]?|[fF][tT][pP]:\/\/|(?<![^\s*_~(])www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9](?=(?:mailto|xmpp):)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{|}~-]+@))))/
+
+with one scan of the string. It is three times faster than that regex once the process is warm, and
+it produced the identical HTML on all 720 cases and on the fuzz set - but the grader runs each entry
+once in a fresh process, and there the same scan cost 4.70s against 3.55s for the vendored rule
+(three runs each, interleaved, same box). Native regex wins cold; only work that disappears entirely
+wins. The scan is not in this repository.
+
 ## Reference and licence
 
 `vendor/marked/marked.esm.js` is marked 18.1.3's npm ESM build, unmodified
