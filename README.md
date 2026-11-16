@@ -1,5 +1,9 @@
 # markdown-render-speed-02
 
+[![markdown-render-speed-02](https://make.fun/badge/markdown-render-speed-02.svg)](https://make.fun/c/markdown-render-speed-02)
+[![rank](https://make.fun/badge/markdown-render-speed-02/zeroknowledge0x/markdown-render-speed-02/rank.svg)](https://make.fun/c/markdown-render-speed-02)
+[![reward](https://make.fun/badge/markdown-render-speed-02/zeroknowledge0x/markdown-render-speed-02/reward.svg)](https://make.fun/c/markdown-render-speed-02)
+
 An entry for make.fun's [markdown-render-speed-02](https://make.fun/c/markdown-render-speed-02):
 `parse.js`, a dependency-free ES module whose `parse(markdown)` returns exactly the HTML that
 marked 18.1.3's `marked.parse(markdown)` returns with marked's default options (GFM on, breaks off,
